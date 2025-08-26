@@ -43,6 +43,7 @@ def index():
                 response = requests.get(url)
                 soup = BeautifulSoup(response.text, 'html.parser')
                 lyrics = soup.find('div', id='lyrics-root')
+                print(lyrics)
                 title_tag = soup.find('h1')
                 title = title_tag.text.strip() if title_tag else "Untitled"
 
@@ -62,5 +63,6 @@ def index():
             error = "Must be a Genius.com URL!"
 
     return render_template('index.html', img_data=img_data, title=title, error=error)
+
 
 
