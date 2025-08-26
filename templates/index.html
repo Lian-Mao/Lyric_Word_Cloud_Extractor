@@ -5,6 +5,7 @@
 </head>
 <body>
     <h1>🎶 Genius Lyrics Word Cloud</h1>
+    <p>{{lyrics}}</p>
     <form method="post">
         <input type="text" name="url" placeholder="Enter Genius.com lyrics URL" required>
         <button type="submit">Generate</button>
@@ -19,4 +20,5 @@
         <img src="data:image/png;base64,{{ img_data }}" alt="Word Cloud">
     {% endif %}
 </body>
+
 </html>
