@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lyrics Word Cloud</title>
+</head>
+<body>
+    <h1>🎶 Genius Lyrics Word Cloud</h1>
+    <form method="post">
+        <input type="text" name="url" placeholder="Enter Genius.com lyrics URL" required>
+        <button type="submit">Generate</button>
+    </form>
+
+    {% if error %}
+        <p style="color:red;">{{ error }}</p>
+    {% endif %}
+
+    {% if title %}
+        <h2>{{ title }}</h2>
+    {% endif %}
+
+    {% if img_data %}
+        <img src="data:image/png;base64,{{ img_data }}" alt="Word Cloud">
+    {% endif %}
+</body>
+</html>
