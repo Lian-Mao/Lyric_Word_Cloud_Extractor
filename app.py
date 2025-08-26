@@ -4,6 +4,8 @@ import re
 from bs4 import BeautifulSoup
 from wordcloud import WordCloud
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')
 import io
 import base64
 
@@ -15,13 +17,13 @@ def clean_text(text):
     text = re.sub(r'(?<!^)([A-Z])', r' \1', text)  # Add space before capital letters
     return text
 
-def generate_wordcloud(word_list, title):
+def generate_wordcloud(word_list, title,number):
     wcstring = ' '.join(word_list)
-    wc = WordCloud(width=800, height=400, background_color='white').generate(wcstring)
+    wc = WordCloud(max_words= int(number),width=800, height=400, background_color='white').generate(wcstring)
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.imshow(wc, interpolation='bilinear')
     ax.axis('off')
-    ax.set_title(f'Word Cloud for the lyrics of "{title}"', fontsize=16)
+    ax.set_title(f'Word Cloud for the top {number} lyrics of "{title}"', fontsize=16)
 
     buf = io.BytesIO()
     plt.savefig(buf, format='png')
@@ -38,23 +40,27 @@ def index():
 
     if request.method == 'POST':
         url = request.form['url'].strip()
+        number = request.form['number'].strip()
         if "genius" in url.lower():
             try:
                 response = requests.get(url)
                 soup = BeautifulSoup(response.text, 'html.parser')
-                lyrics = soup.find('div', id='lyrics-root')
-                print(lyrics)
                 title_tag = soup.find('h1')
-                title = title_tag.text.strip() if title_tag else "Untitled"
+                lyrics_divs = soup.find_all('div',id='lyrics-root')
+                if lyrics_divs:
+                    for div in lyrics_divs:
+                        text = div.get_text().strip()
+                        match = re.search(r'\[.*?\]', text)
+                        if match:
+                            lyrics_text = text[match.start():] if match else text
+                            break
 
-                if lyrics:
-                    lyrics_text = lyrics.text
-                    match = re.search(r'\[.*?\]', lyrics_text)
-                    result = lyrics_text[match.start():] if match else lyrics_text
-                    result_list = result.split()
+                    title = title_tag.text.strip() if title_tag else "Untitled"
+
+                    result_list = lyrics_text.split(" ")
                     cleaned_list = [item for item in result_list if item]
                     cleaned_text = clean_text(' '.join(cleaned_list)).split()
-                    img_data = generate_wordcloud(cleaned_text, title)
+                    img_data = generate_wordcloud(cleaned_text, title,number)
                 else:
                     error = "Cannot find lyrics!"
             except Exception as e:
@@ -64,5 +70,5 @@ def index():
 
     return render_template('index.html', img_data=img_data, title=title, error=error)
 
-
-
+if __name__ == '__main__':
+    app.run(debug=True)

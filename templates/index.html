@@ -1,23 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Lyrics Word Cloud</title>
+    <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
-    <h1>🎶 Genius Lyrics Word Cloud</h1>
-    <p>{{lyrics}}</p>
+    <h1>🎶 Genius Lyrics Word Cloud 🎶</h1>
+
     <form method="post">
-        <input type="text" name="url" placeholder="Enter Genius.com lyrics URL" required>
+        <label for="url">Enter lyrics URL (Genius only):</label>
+        <input type="text" name="url" id="url" placeholder="https://genius.com/..." required>
+
+        <label for="number">Choose a number of words:</label>
+        <select name="number" id="number">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+            <option value="200">200</option>
+        </select>
+
         <button type="submit">Generate</button>
     </form>
 
     {% if error %}
-        <p style="color:red;">{{ error }}</p>
+        <p class="error">{{ error }}</p>
     {% endif %}
 
-
     {% if img_data %}
-        <img src="data:image/png;base64,{{ img_data }}" alt="Word Cloud">
+        <div class="image-container">
+            <img src="data:image/png;base64,{{ img_data }}" alt="Word Cloud">
+            <br>
+            <a href="data:image/png;base64,{{ img_data }}" download="wordcloud.png">
+                <button>Save Image</button>
+            </a>
+        </div>
     {% endif %}
 </body>
 
